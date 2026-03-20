@@ -1,0 +1,161 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+model User {
+  id            String          @id @default(uuid())
+  name          String
+  email         String          @unique
+  password_hash String
+  role          Role            @default(STUDENT)
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+
+  refresh_tokens RefreshToken[]
+  enrollments    Enrollment[]
+  video_progress VideoProgress[]
+  payments       Payment[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid())
+  token_hash String    @db.VarChar(512)
+  user_id    String
+  expires_at DateTime
+  revoked_at DateTime?
+  created_at DateTime  @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([token_hash])
+  @@map("refresh_tokens")
+}
+
+model Subject {
+  id            String   @id @default(uuid())
+  title         String
+  slug          String   @unique
+  description   String?  @db.Text
+  thumbnail_url String?
+  price         Decimal? @db.Decimal(10, 2)
+  is_published  Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  sections    Section[]
+  enrollments Enrollment[]
+  payments    Payment[]
+
+  @@map("subjects")
+}
+
+model Section {
+  id          String   @id @default(uuid())
+  title       String
+  subject_id  String
+  order_index Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  subject Subject @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+  videos  Video[]
+
+  @@unique([subject_id, order_index])
+  @@index([subject_id])
+  @@map("sections")
+}
+
+model Video {
+  id               String   @id @default(uuid())
+  title            String
+  description      String?  @db.Text
+  youtube_url      String
+  section_id       String
+  order_index      Int
+  duration_seconds Int      @default(0)
+  is_published     Boolean  @default(false)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  section  Section         @relation(fields: [section_id], references: [id], onDelete: Cascade)
+  progress VideoProgress[]
+
+  @@unique([section_id, order_index])
+  @@index([section_id])
+  @@map("videos")
+}
+
+model Enrollment {
+  id         String   @id @default(uuid())
+  user_id    String
+  subject_id String
+  created_at DateTime @default(now())
+
+  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, subject_id])
+  @@index([user_id])
+  @@index([subject_id])
+  @@map("enrollments")
+}
+
+model VideoProgress {
+  id                    String    @id @default(uuid())
+  user_id               String
+  video_id              String
+  last_position_seconds Int       @default(0)
+  is_completed          Boolean   @default(false)
+  completed_at          DateTime?
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt
+
+  user  User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [video_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, video_id])
+  @@index([user_id])
+  @@index([video_id])
+  @@map("video_progress")
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  user_id           String
+  subject_id        String
+  amount            Decimal       @db.Decimal(10, 2)
+  currency          String        @default("INR")
+  status            PaymentStatus @default(PENDING)
+  payment_method    String?
+  transaction_id    String?       @unique
+  failure_reason    String?
+  created_at        DateTime      @default(now())
+  updated_at        DateTime      @updatedAt
+
+  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([subject_id])
+  @@map("payments")
+}
