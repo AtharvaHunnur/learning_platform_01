@@ -37,7 +37,7 @@ export function LessonSidebar({ subjectTitle, sections }: LessonSidebarProps) {
   };
 
   return (
-    <aside className="w-80 border-l bg-card flex flex-col h-full overflow-hidden shrink-0">
+    <aside className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l bg-card flex flex-col h-full lg:h-full overflow-hidden shrink-0">
       <div className="p-4 border-b bg-muted/30">
         <h3 className="font-bold text-sm line-clamp-2">{subjectTitle}</h3>
       </div>

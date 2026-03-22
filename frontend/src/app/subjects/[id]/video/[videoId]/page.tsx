@@ -140,7 +140,7 @@ export default function VideoPlayerPage() {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <Navbar />
-      <div className="flex flex-grow overflow-hidden">
+      <div className="flex flex-col lg:flex-row flex-grow overflow-hidden">
         {/* Main Content */}
         <div className="flex-grow flex flex-col overflow-y-auto bg-slate-950">
           <div className="w-full max-w-5xl mx-auto px-4 py-8 flex flex-col gap-6">
@@ -154,7 +154,7 @@ export default function VideoPlayerPage() {
                 </Button>
               </div>
             ) : (
-              <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+              <div className="aspect-video relative w-full bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
                 <YouTube
                   videoId={extractVideoId(data.youtube_url)}
                   opts={{
@@ -168,7 +168,8 @@ export default function VideoPlayerPage() {
                   }}
                   onReady={onPlayerReady}
                   onStateChange={onPlayerStateChange}
-                  className="w-full h-full"
+                  className="w-full h-full absolute top-0 left-0"
+                  iframeClassName="w-full h-full"
                 />
               </div>
             )}
