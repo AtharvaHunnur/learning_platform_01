@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ChatWidget } from "@/components/ai/ChatWidget";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ProtectedRoute>
             {children}
+            <ChatWidget />
           </ProtectedRoute>
         </ThemeProvider>
       </body>

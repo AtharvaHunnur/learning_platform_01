@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/button";
-import { LogOut, User, BookOpen, GraduationCap, Users, LayoutDashboard } from "lucide-react";
+import { LogOut, User, BookOpen, GraduationCap, Users, LayoutDashboard, Sparkles } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 
 export function Navbar() {
@@ -62,6 +62,12 @@ export function Navbar() {
                     <Button variant="ghost" size="sm" className="gap-2 text-primary">
                       <LayoutDashboard className="h-4 w-4" />
                       <span className="hidden sm:inline">Payments</span>
+                    </Button>
+                  </Link>
+                  <Link href="/admin/assistant">
+                    <Button variant={pathname === '/admin/assistant' ? "secondary" : "ghost"} size="sm" className="gap-2 text-primary">
+                      <Sparkles className="h-4 w-4" />
+                      <span className="hidden sm:inline">AI Assistant</span>
                     </Button>
                   </Link>
                 </div>

@@ -13,6 +13,7 @@ import progressRoutes from './modules/progress/progress.routes';
 import paymentRoutes from './modules/payment/payment.routes';
 import adminRoutes from './modules/admin/admin.routes';
 import certificatesRoutes from './modules/certificates/certificates.routes';
+import aiRoutes from './modules/ai/ai.routes';
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use('/api/progress', progressRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/certificates', certificatesRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Error handling
 app.use(notFoundHandler);

@@ -10,4 +10,5 @@ export const env = {
   JWT_ACCESS_EXPIRY: process.env.JWT_ACCESS_EXPIRY || '15m',
   JWT_REFRESH_EXPIRY: process.env.JWT_REFRESH_EXPIRY || '30d',
   FRONTEND_URL: (process.env.FRONTEND_URL || 'http://localhost:3000').trim().replace(/['"]+/g, ''),
+  HUGGINGFACE_API_KEY: process.env.HUGGINGFACE_API_KEY || '',
 };
