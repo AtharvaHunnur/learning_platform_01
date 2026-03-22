@@ -5,7 +5,7 @@ import { PrismaClient, AssistantType, MessageRole } from '@prisma/client';
 const prisma = new PrismaClient();
 const hf = new HfInference(env.HUGGINGFACE_API_KEY);
 
-const DEFAULT_MODEL = 'HuggingFaceH4/zephyr-7b-beta';
+const DEFAULT_MODEL = 'Qwen/Qwen2.5-72B-Instruct';
 
 const SYSTEM_PROMPTS = {
   [AssistantType.LEARNER]: `You are a helpful AI assistant for a Learning Management System called "Learn n Earn". 
