@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AIService } from './ai.service';
 import { AssistantType } from '@prisma/client';
+import { env } from '../../config/env';
 
 const aiService = new AIService();
 
@@ -14,8 +15,12 @@ export class AIController {
         return res.status(400).json({ message: 'Session ID and message are required' });
       }
 
-      const response = await aiService.chat(sessionId, userId, message);
-      res.json(response);
+      if (!env.HUGGINGFACE_API_KEY) {
+        return res.status(500).json({ message: 'Hugging Face API key is not configured in Vercel Environment Variables. Please add HUGGINGFACE_API_KEY.' });
+      }
+
+      const responseMsg = await aiService.chat(sessionId, userId, message);
+      res.json(responseMsg);
     } catch (error: any) {
       console.error('AI Chat Error:', error);
       res.status(500).json({ message: error.message || 'Error occurred during AI chat' });
