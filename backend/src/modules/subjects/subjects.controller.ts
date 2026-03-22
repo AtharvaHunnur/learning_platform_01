@@ -37,10 +37,10 @@ export class SubjectsController {
 
   async create(req: AuthRequest, res: Response) {
     try {
-      const { title, description, thumbnail_url } = req.body;
+      const { title, description, thumbnail_url, is_published, price, preview_youtube_url } = req.body;
       if (!title) return sendError(res, 'Title is required', 400);
 
-      const result = await subjectsService.create({ title, description, thumbnail_url });
+      const result = await subjectsService.create({ title, description, thumbnail_url, is_published, price, preview_youtube_url });
       return sendSuccess(res, result, 'Subject created', 201);
     } catch (error: any) {
       return sendError(res, error.message, error.status || 500);

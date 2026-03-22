@@ -61,7 +61,7 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* User Info Sidebar */}
           <div className="space-y-6">
-            <Card className="border-none shadow-md overflow-hidden bg-primary/5">
+            <Card className="glass-card overflow-hidden border-primary/10 hover:border-primary/30 transition-all duration-300">
               <div className="h-24 bg-primary/20" />
               <CardContent className="px-6 pb-6 -mt-12 text-center">
                 <div className="inline-flex items-center justify-center h-24 w-24 rounded-full bg-background border-4 border-muted shadow-sm mb-4">
@@ -78,7 +78,7 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-sm">
+            <Card className="glass-card border-primary/10 hover:border-primary/30 transition-all duration-300 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg">Account Details</CardTitle>
               </CardHeader>
@@ -105,9 +105,9 @@ export default function ProfilePage() {
 
           {/* Enrolled Courses */}
           <div className="md:col-span-2 space-y-6">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-primary" />
-              My Enrolled Courses
+            <h2 className="text-3xl font-extrabold flex items-center gap-3 mb-8">
+              <BookOpen className="h-8 w-8 text-primary" />
+              <span className="text-gradient">My Enrolled Courses</span>
             </h2>
 
             {profile?.enrollments?.length > 0 ? (
@@ -140,7 +140,7 @@ export default function ProfilePage() {
             ) : (
               <div className="flex flex-col items-center justify-center py-20 bg-muted/20 rounded-xl border-2 border-dashed">
                 <p className="text-muted-foreground mb-4">You haven&apos;t enrolled in any courses yet.</p>
-                <Link href="/">
+                <Link href="/subjects">
                   <Button>Browse Courses</Button>
                 </Link>
               </div>

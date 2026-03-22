@@ -37,13 +37,13 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-muted/30 px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-background via-muted/50 to-primary/10 px-4">
       <div className="mb-8 flex items-center gap-2">
         <GraduationCap className="h-8 w-8 text-primary" />
         <span className="text-2xl font-bold">Antigravity LMS</span>
       </div>
       
-      <Card className="w-full max-w-md shadow-lg border-none">
+      <Card className="w-full max-w-md glass-card shadow-2xl border-primary/20">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Create account</CardTitle>
           <CardDescription className="text-center">

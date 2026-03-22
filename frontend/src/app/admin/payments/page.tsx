@@ -26,8 +26,8 @@ export default function AdminPaymentsPage() {
 
   const fetchAllPayments = async () => {
     try {
-      const { data } = await api.get("/payments/admin/all");
-      setPayments(data);
+      const { data } = await api.get("/admin/payments");
+      setPayments(data.data);
     } catch (err) {
       console.error("Failed to fetch all payments", err);
     } finally {

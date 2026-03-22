@@ -1,5 +1,6 @@
 import prisma from '../../config/db';
 import slugify from 'slugify';
+import { getYouTubeThumbnail } from '../../utils/youtube';
 
 export class SubjectsService {
   async list(page: number = 1, limit: number = 12, search?: string) {
@@ -167,7 +168,7 @@ export class SubjectsService {
     };
   }
 
-  async create(data: { title: string; description?: string; thumbnail_url?: string; price?: number }) {
+  async create(data: { title: string; description?: string; thumbnail_url?: string; price?: number; preview_youtube_url?: string; is_published?: boolean }) {
     const slug = slugify(data.title, { lower: true, strict: true });
 
     const existing = await prisma.subject.findUnique({ where: { slug } });
@@ -175,20 +176,30 @@ export class SubjectsService {
       throw { status: 409, message: 'A subject with this title already exists' };
     }
 
+    let { thumbnail_url, preview_youtube_url, ...rest } = data;
+    if (!thumbnail_url && preview_youtube_url) {
+      thumbnail_url = getYouTubeThumbnail(preview_youtube_url) || undefined;
+    }
+
     return prisma.subject.create({
-      data: { ...data, slug },
+      data: { ...rest, thumbnail_url, slug },
     });
   }
 
-  async update(id: string, data: { title?: string; description?: string; thumbnail_url?: string; is_published?: boolean; price?: number }) {
+  async update(id: string, data: { title?: string; description?: string; thumbnail_url?: string; is_published?: boolean; price?: number; preview_youtube_url?: string }) {
     const subject = await prisma.subject.findUnique({ where: { id } });
     if (!subject) {
       throw { status: 404, message: 'Subject not found' };
     }
 
-    const updateData: any = { ...data };
+    const { preview_youtube_url, ...rest } = data;
+    const updateData: any = { ...rest };
     if (data.title) {
       updateData.slug = slugify(data.title, { lower: true, strict: true });
+    }
+
+    if (!data.thumbnail_url && preview_youtube_url) {
+      updateData.thumbnail_url = getYouTubeThumbnail(preview_youtube_url);
     }
 
     return prisma.subject.update({
