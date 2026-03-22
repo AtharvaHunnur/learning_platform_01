@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { GraduationCap } from "lucide-react";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -37,6 +38,9 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-background via-muted/50 to-primary/10 px-4">
+      <div className="absolute top-4 right-4">
+        <ModeToggle />
+      </div>
       <div className="mb-8 flex items-center gap-2">
         <GraduationCap className="h-8 w-8 text-primary" />
         <span className="text-2xl font-bold">Learn n Earn</span>
