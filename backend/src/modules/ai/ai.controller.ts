@@ -34,7 +34,12 @@ export class AIController {
       const session = await aiService.createSession(userId, type as AssistantType, title);
       res.status(201).json(session);
     } catch (error: any) {
-      res.status(500).json({ message: error.message || 'Error creating chat session' });
+      console.error('Create Session Error:', error);
+      res.status(500).json({ 
+        message: error.message || 'Error creating chat session',
+        error: error.message,
+        stack: error.stack 
+      });
     }
   }
 
@@ -46,7 +51,12 @@ export class AIController {
       const sessions = await aiService.getSessions(userId, type as AssistantType);
       res.json(sessions);
     } catch (error: any) {
-      res.status(500).json({ message: error.message || 'Error fetching chat sessions' });
+      console.error('Get Sessions Error:', error);
+      res.status(500).json({ 
+        message: error.message || 'Error fetching chat sessions',
+        error: error.message,
+        stack: error.stack 
+      });
     }
   }
 
