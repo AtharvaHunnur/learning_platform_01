@@ -57,6 +57,19 @@ export class AIController {
     }
   }
 
+  async clearMessages(req: Request, res: Response) {
+    try {
+      const { sessionId } = req.params;
+      const userId = (req as any).user.userId;
+      
+      await aiService.clearMessages(sessionId, userId);
+      res.json({ message: 'Chat history cleared' });
+    } catch (error: any) {
+      console.error('Clear Messages Error:', error);
+      res.status(500).json({ message: error.message || 'Error clearing chat history' });
+    }
+  }
+
   async getMessages(req: Request, res: Response) {
     try {
       const { sessionId } = req.params;

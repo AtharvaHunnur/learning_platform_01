@@ -11,5 +11,6 @@ router.post('/chat', aiController.chat);
 router.post('/sessions', aiController.createSession);
 router.get('/sessions', aiController.getSessions);
 router.get('/sessions/:sessionId/messages', aiController.getMessages);
+router.delete('/sessions/:sessionId/messages', aiController.clearMessages);
 
 export default router;

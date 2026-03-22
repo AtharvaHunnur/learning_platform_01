@@ -31,8 +31,8 @@ export const AdminAssistant: React.FC = () => {
       const sessions = await aiApi.getSessions(AssistantType.ADMIN);
       if (sessions.length > 0) {
         setSession(sessions[0]);
-        const history = await aiApi.getMessages(sessions[0].id);
-        setMessages(history);
+        await aiApi.clearMessages(sessions[0].id);
+        setMessages([]);
       } else {
         const newSession = await aiApi.createSession(AssistantType.ADMIN, 'Admin Operations Hub');
         setSession(newSession);

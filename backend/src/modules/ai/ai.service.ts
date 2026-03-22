@@ -89,6 +89,17 @@ export class AIService {
     });
   }
 
+  async clearMessages(sessionId: string, userId: string) {
+    const session = await prisma.chatSession.findFirst({
+      where: { id: sessionId, user_id: userId }
+    });
+    if (!session) throw new Error('Chat session not found');
+
+    return prisma.chatMessage.deleteMany({
+      where: { session_id: sessionId }
+    });
+  }
+
   async getMessages(sessionId: string, userId: string) {
     const session = await prisma.chatSession.findFirst({
       where: { id: sessionId, user_id: userId }

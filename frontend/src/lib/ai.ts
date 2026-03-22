@@ -44,6 +44,11 @@ export const aiApi = {
     return response.data;
   },
 
+  clearMessages: async (sessionId: string) => {
+    const response = await api.delete(`/ai/sessions/${sessionId}/messages`);
+    return response.data;
+  },
+
   sendMessage: async (sessionId: string, message: string) => {
     const response = await api.post<ChatMessage>('/ai/chat', { sessionId, message });
     return response.data;
