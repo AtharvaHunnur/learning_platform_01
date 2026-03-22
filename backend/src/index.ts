@@ -43,9 +43,11 @@ app.use('/api/certificates', certificatesRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-app.listen(env.PORT, () => {
-  console.log(`🚀 Server running on port ${env.PORT}`);
-  console.log(`📊 Environment: ${env.NODE_ENV}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(env.PORT, () => {
+    console.log(`🚀 Server running on port ${env.PORT}`);
+    console.log(`📊 Environment: ${env.NODE_ENV}`);
+  });
+}
 
 export default app;
