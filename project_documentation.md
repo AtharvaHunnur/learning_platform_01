@@ -39,6 +39,7 @@ Antigravity LMS is a full-stack Learning Management System designed for high per
 
 ### 📚 Course Management & Editor
 - **Hierarchy**: Subjects -> Sections -> Videos.
+- **Course Creation & Publication**: Admins can seamlessly create and publish new courses directly from the admin panel.
 - **Rich Content & Media**: Supports descriptions, custom ordering, and video thumbnails. Course and video thumbnails can be configured via direct image URLs or automatically extracted from YouTube URLs.
 - **Advanced Editing**: Admins can seamlessly edit existing video details (title, URLs, thumbnails) via an interactive dialog-based UI.
 - **Publication Workflow**: Allows drafting content before making it public.
@@ -49,8 +50,9 @@ Antigravity LMS is a full-stack Learning Management System designed for high per
 
 ### 🎓 Student Experience
 - **Course Enrollment**: Students can enroll in subjects and access exclusive video content.
-- **Progress Tracking**: Automatic tracking of video completion and last-watched position.
-- **Profile Management**: Personal dashboard for students to manage their account.
+- **Video Resumption & Progress Tracking**: Automatic tracking of video completion and last-watched position, allowing students to resume exactly where they left off.
+- **Certificate Generation**: Students automatically receive and can view a generated certificate upon completing all videos in a course.
+- **Profile Management**: Personal dashboard for students to manage their account, view enrolled courses, and download certificates.
 
 ### 💳 Payment Integration
 - **Transaction Tracking**: Comprehensive logging of payments including status (Pending, Completed, Failed).
@@ -74,6 +76,8 @@ The system uses a relational database with the following key entities:
 Throughout the development process, several critical issues were addressed:
 - **Hydration Errors**: Fixed complex React hydration mismatches caused by nested interactive elements (e.g., buttons inside dialog triggers).
 - **Dynamic Routing**: Resolved 404 errors in Next.js catch-all and dynamic segments for video playback.
+- **Video Progress & Certificates**: Fixed 500 Internal Server errors related to saving video progress and fetching/generating certificates.
+- **UI Enhancements**: Improved UI visibility across the application for a better user experience.
 - **Schema Refinement**: Fixed mismatches between application logic and Prisma schema (e.g., field naming consistency during user creation).
 - **TypeScript Strictness**: Addressed unknown type errors in authentication catch blocks and missing NodeJS `process` types for database seed scripts.
 - **Build Optimization**: Resolved extensive linting and TypeScript errors to ensure smooth Vercel deployments.

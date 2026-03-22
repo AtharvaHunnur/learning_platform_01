@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
 import api from "@/lib/api";
 import { Navbar } from "@/components/layout/Navbar";
 import { SubjectCard } from "@/components/subjects/SubjectCard";
@@ -8,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Search, Info } from "lucide-react";
 
 export default function SubjectsPage() {
+  const router = useRouter();
+  const { user } = useAuthStore();
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -24,6 +28,10 @@ export default function SubjectsPage() {
   };
 
   useEffect(() => {
+    if (user?.role === "ADMIN") {
+      router.push("/dashboard");
+      return;
+    }
     const timer = setTimeout(() => {
       fetchSubjects();
     }, 300);

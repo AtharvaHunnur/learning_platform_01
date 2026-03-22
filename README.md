@@ -11,7 +11,8 @@ A production-ready Learning Management System similar to Udemy, built with moder
 - **Decoupled Architecture**: Next.js 15 Frontend and Node.js/Express Backend.
 - **Authentication**: Secure JWT authentication with Refresh Token rotation.
 - **Course Hierarchy**: Manage Subjects, Sections, and Videos with ease.
-- **Progress Tracking**: Automatic tracking of student learning progress.
+- **Video Resumption & Progress Tracking**: Automatic tracking of student learning progress, allowing students to resume videos exactly where they left off.
+- **Certificate Generation**: Automatically generated certificates of completion for students who finish a course.
 - **Admin Dashboard**: Comprehensive tools for content management and payment tracking.
 - **Deployment Ready**: Optimized for Vercel and production databases.
 

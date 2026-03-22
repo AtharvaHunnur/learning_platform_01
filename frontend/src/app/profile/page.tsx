@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import api from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
-import { User, Mail, Shield, BookOpen, Clock, Calendar, History as HistoryIcon } from "lucide-react";
+import { User, Mail, Shield, BookOpen, Clock, Calendar, History as HistoryIcon, Award } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -26,6 +28,10 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
+    if (user?.role === "ADMIN") {
+      router.push("/dashboard");
+      return;
+    }
     if (isAuthenticated) {
       fetchProfile();
     } else {
@@ -91,7 +97,15 @@ export default function ProfilePage() {
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span>Joined {profile && new Date(profile.created_at).toLocaleDateString()}</span>
                 </div>
-                <div className="pt-2">
+                <div className="pt-2 space-y-2">
+                  {user?.role !== 'ADMIN' && (
+                    <Link href="/profile/certificates">
+                      <Button variant="default" size="sm" className="w-full gap-2 font-medium bg-yellow-500 hover:bg-yellow-600 text-white">
+                        <Award className="h-4 w-4" />
+                        My Certificates
+                      </Button>
+                    </Link>
+                  )}
                   <Link href="/profile/payments">
                     <Button variant="outline" size="sm" className="w-full gap-2 font-medium">
                       <HistoryIcon className="h-4 w-4" />
@@ -127,7 +141,14 @@ export default function ProfilePage() {
                       )}
                     </div>
                     <CardHeader className="p-4">
-                      <CardTitle className="text-base line-clamp-1">{enrollment.subject.title}</CardTitle>
+                      <div className="flex items-start justify-between gap-2">
+                        <CardTitle className="text-base line-clamp-1">{enrollment.subject.title}</CardTitle>
+                        {profile?.certificates?.some((c: any) => c.subject_id === enrollment.subject.id) && (
+                          <span className="bg-green-100/80 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap border border-green-200">
+                            Completed
+                          </span>
+                        )}
+                      </div>
                     </CardHeader>
                     <CardContent className="px-4 pb-4">
                       <Link href={`/subjects/${enrollment.subject.id}`}>

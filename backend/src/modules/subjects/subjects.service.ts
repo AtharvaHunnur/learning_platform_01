@@ -241,7 +241,18 @@ export class SubjectsService {
     const enrollment = await prisma.enrollment.findUnique({
       where: { user_id_subject_id: { user_id: userId, subject_id: subjectId } },
     });
-    return { enrolled: !!enrollment };
+
+    let certificate_id = null;
+    if (enrollment) {
+      const cert = await prisma.certificate.findUnique({
+        where: { user_id_subject_id: { user_id: userId, subject_id: subjectId } }
+      });
+      if (cert) {
+        certificate_id = cert.id;
+      }
+    }
+
+    return { enrolled: !!enrollment, certificate_id };
   }
 }
 

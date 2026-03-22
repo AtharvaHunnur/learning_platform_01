@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
+import { extractYouTubeId } from "@/lib/utils";
 
 export default function NewCoursePage() {
   const router = useRouter();
@@ -21,6 +22,12 @@ export default function NewCoursePage() {
     price: "",
     is_published: false,
   });
+
+  const extractedThumbnail = formData.preview_youtube_url 
+    ? extractYouTubeId(formData.preview_youtube_url) 
+      ? `https://img.youtube.com/vi/${extractYouTubeId(formData.preview_youtube_url)}/mqdefault.jpg` 
+      : null
+    : null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,9 +92,16 @@ export default function NewCoursePage() {
                   value={formData.preview_youtube_url}
                   onChange={e => setFormData({...formData, preview_youtube_url: e.target.value})}
                 />
-                <p className="text-[10px] text-muted-foreground">
-                  A thumbnail will be automatically generated from this video.
-                </p>
+                {extractedThumbnail ? (
+                  <div className="mt-2 relative aspect-video w-full max-w-sm mx-auto overflow-hidden rounded-md border text-muted-foreground">
+                    <img src={extractedThumbnail} alt="Extracted Thumbnail Preview" className="object-cover w-full h-full" />
+                    <div className="absolute inset-x-0 bottom-0 bg-black/60 p-1 text-center text-[10px] text-white">Live Thumbnail Preview</div>
+                  </div>
+                ) : (
+                  <p className="text-[10px] text-muted-foreground">
+                    A thumbnail will be automatically generated from this video.
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Price (INR)</label>

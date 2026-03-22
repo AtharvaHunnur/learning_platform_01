@@ -47,18 +47,18 @@ export function LessonSidebar({ subjectTitle, sections }: LessonSidebarProps) {
           <div key={section.id} className="border-b last:border-b-0">
             <button
               onClick={() => toggleSection(section.id)}
-              className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors text-left"
+              className="group w-full flex items-center justify-between p-4 hover:bg-primary/5 hover:text-primary transition-all duration-200 text-left"
             >
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-muted-foreground w-4 text-center">
+                <span className="text-xs font-bold text-muted-foreground group-hover:text-primary/70 transition-colors w-4 text-center">
                   {idx + 1}
                 </span>
                 <span className="text-sm font-semibold line-clamp-1">{section.title}</span>
               </div>
               {expandedSections[section.id] ? (
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
               ) : (
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
               )}
             </button>
             
@@ -72,13 +72,13 @@ export function LessonSidebar({ subjectTitle, sections }: LessonSidebarProps) {
                       key={video.id}
                       href={video.locked ? "#" : `/subjects/${section.subject_id || '..'}/video/${video.id}`}
                       className={cn(
-                        "flex items-center gap-3 px-6 py-3 text-sm transition-colors",
-                        isActive ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/50 text-muted-foreground",
-                        video.locked && "cursor-not-allowed opacity-60"
+                        "group flex items-center gap-3 px-6 py-3 text-sm transition-all duration-200 border-l-2",
+                        isActive ? "bg-primary/10 text-primary font-medium border-primary" : "border-transparent hover:bg-primary/5 hover:border-primary/50 text-muted-foreground hover:text-foreground",
+                        video.locked && "cursor-not-allowed opacity-60 hover:bg-transparent hover:border-transparent hover:text-muted-foreground"
                       )}
                       onClick={(e) => video.locked && e.preventDefault()}
                     >
-                      <div className="shrink-0 flex items-center justify-center w-5 h-5">
+                      <div className="shrink-0 flex items-center justify-center w-5 h-5 transition-transform group-hover:scale-110">
                         {video.is_completed ? (
                           <CheckCircle className="h-4 w-4 text-green-500 fill-green-500/10" />
                         ) : video.locked ? (

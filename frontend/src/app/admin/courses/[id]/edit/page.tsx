@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2, ArrowLeft, Loader2, Save, Play, Pencil, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Navbar } from "@/components/layout/Navbar";
+import { extractYouTubeId } from "@/lib/utils";
 
 export default function EditCoursePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -198,8 +199,17 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Direct Thumbnail URL</label>
                   <Input value={course.thumbnail_url || ""} onChange={e => setCourse({...course, thumbnail_url: e.target.value})} />
-                  {course.thumbnail_url && (
-                    <img src={course.thumbnail_url} alt="Preview" className="mt-2 rounded-lg aspect-video object-cover w-full shadow-sm" />
+                  {(course.thumbnail_url || (course.preview_youtube_url && extractYouTubeId(course.preview_youtube_url))) && (
+                    <div className="mt-2 relative">
+                      <img 
+                        src={course.thumbnail_url || `https://img.youtube.com/vi/${extractYouTubeId(course.preview_youtube_url)}/mqdefault.jpg`} 
+                        alt="Preview" 
+                        className="rounded-lg aspect-video object-cover w-full shadow-sm" 
+                      />
+                      {!course.thumbnail_url && (
+                        <div className="absolute inset-x-0 bottom-0 bg-black/60 rounded-b-lg p-1 text-center text-[10px] text-white">Live YouTube Preview</div>
+                      )}
+                    </div>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -325,6 +335,18 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
                   value={selectedVideo.thumbnail_url || ""} 
                   onChange={e => setSelectedVideo({...selectedVideo, thumbnail_url: e.target.value})} 
                 />
+                {(selectedVideo.thumbnail_url || (selectedVideo.youtube_url && extractYouTubeId(selectedVideo.youtube_url))) && (
+                  <div className="mt-2 relative">
+                    <img 
+                      src={selectedVideo.thumbnail_url || `https://img.youtube.com/vi/${extractYouTubeId(selectedVideo.youtube_url)}/mqdefault.jpg`} 
+                      alt="Preview" 
+                      className="rounded-lg aspect-video object-cover w-full shadow-sm" 
+                    />
+                    {!selectedVideo.thumbnail_url && (
+                      <div className="absolute inset-x-0 bottom-0 bg-black/60 rounded-b-lg p-1 text-center text-[10px] text-white">Live YouTube Preview</div>
+                    )}
+                  </div>
+                )}
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>

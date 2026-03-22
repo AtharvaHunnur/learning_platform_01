@@ -103,8 +103,11 @@ export default function AdminProgressPage() {
                   <TableCell className="w-[200px]">
                     <div className="space-y-1">
                       <Progress value={item.progress_percentage} className="h-2" />
-                      <div className="text-[10px] text-right text-muted-foreground">
-                        {item.progress_percentage}%
+                      <div className="text-[10px] flex justify-between text-muted-foreground mt-1">
+                        <span>{item.progress_percentage === 100 ? (
+                          <span className="text-green-600 font-bold">Completed</span>
+                        ) : 'In Progress'}</span>
+                        <span>{item.progress_percentage}%</span>
                       </div>
                     </div>
                   </TableCell>

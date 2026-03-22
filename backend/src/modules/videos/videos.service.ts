@@ -2,8 +2,80 @@ import prisma from '../../config/db';
 import { getYouTubeThumbnail } from '../../utils/youtube';
 
 export class VideosService {
-  // ... existing getById ...
+  async getById(id: string, userId?: string) {
+    const video = await prisma.video.findUnique({
+      where: { id },
+      include: {
+        section: true,
+      },
+    });
 
+    if (!video) throw { status: 404, message: 'Video not found' };
+
+    // Fetch all sections and videos for this subject to compute prev/next and lock status
+    const subjectSections = await prisma.section.findMany({
+      where: { subject_id: video.section.subject_id },
+      orderBy: { order_index: 'asc' },
+      include: {
+        videos: {
+          orderBy: { order_index: 'asc' },
+        },
+      },
+    });
+
+    const allVideos = subjectSections.flatMap((s) => s.videos);
+    const currentIndex = allVideos.findIndex((v) => v.id === id);
+
+    const previous_video_id = currentIndex > 0 ? allVideos[currentIndex - 1].id : null;
+    const next_video_id = currentIndex < allVideos.length - 1 ? allVideos[currentIndex + 1].id : null;
+
+    let locked = false;
+    let unlock_reason = '';
+    let progress = null;
+
+    if (userId) {
+      // Get progress for all videos in this subject
+      const progresses = await prisma.videoProgress.findMany({
+        where: {
+          user_id: userId,
+          video_id: { in: allVideos.map((v) => v.id) },
+        },
+      });
+
+      const progressMap = new Map<string, any>(progresses.map((p) => [p.video_id, p]));
+
+      progress = progressMap.get(id);
+
+      if (currentIndex > 0) {
+        const prevVideo = allVideos[currentIndex - 1];
+        const prevProgress = progressMap.get(prevVideo.id);
+        if (!prevProgress?.is_completed) {
+          locked = true;
+          unlock_reason = `Please complete the previous lesson: ${prevVideo.title}`;
+        }
+      }
+    } else {
+      // If not logged in, only the first video is unlocked (or all locked depending on your business rules)
+      if (currentIndex > 0) {
+        locked = true;
+        unlock_reason = 'Please log in and enroll to access this lesson';
+      }
+    }
+
+    return {
+      id: video.id,
+      title: video.title,
+      description: video.description,
+      youtube_url: video.youtube_url,
+      duration_seconds: video.duration_seconds,
+      section_title: video.section.title,
+      previous_video_id,
+      next_video_id,
+      locked,
+      unlock_reason,
+      progress: progress ? { last_position_seconds: progress.last_position_seconds } : null,
+    };
+  }
   async create(data: {
     title: string;
     description?: string;

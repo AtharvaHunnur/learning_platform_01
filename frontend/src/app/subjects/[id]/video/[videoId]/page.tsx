@@ -6,13 +6,15 @@ import { Navbar } from "@/components/layout/Navbar";
 import { LessonSidebar } from "@/components/video/LessonList";
 import { Button } from "@/components/ui/button";
 import api from "@/lib/api";
+import { useAuthStore } from "@/store/authStore";
 import YouTube from "react-youtube";
-import { ChevronLeft, ChevronRight, CheckCircle, RotateCcw, Monitor, MessageSquare, Info, Lock } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle, RotateCcw, Monitor, MessageSquare, Info, Lock, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function VideoPlayerPage() {
   const { id: subjectId, videoId } = useParams();
   const router = useRouter();
+  const { user } = useAuthStore();
   
   const [data, setData] = useState<any>(null);
   const [tree, setTree] = useState<any>(null);
@@ -53,7 +55,7 @@ export default function VideoPlayerPage() {
     try {
       setSyncing(true);
       await api.post(`/progress/videos/${videoId}`, {
-        last_position_seconds: Math.floor(seconds),
+        last_position_seconds: isNaN(seconds) || seconds === null ? 0 : Math.floor(seconds),
         is_completed: completed
       });
       
@@ -102,6 +104,15 @@ export default function VideoPlayerPage() {
     
     if (data.next_video_id) {
       router.push(`/subjects/${subjectId}/video/${data.next_video_id}`);
+    } else {
+      try {
+        const res = await api.post('/certificates', { subjectId });
+        if (res.data?.data?.id) {
+          router.push(`/certificate/${res.data.data.id}`);
+        }
+      } catch (err) {
+        console.error("Certificate generation failed or already exists:", err);
+      }
     }
   };
 
@@ -121,6 +132,10 @@ export default function VideoPlayerPage() {
   );
 
   if (!data || !tree) return <div className="p-8">Error loading content</div>;
+
+  const totalVideos = tree?.sections?.reduce((acc: number, s: any) => acc + s.videos?.length, 0) || 0;
+  const completedVideos = tree?.sections?.reduce((acc: number, s: any) => acc + s.videos?.filter((v: any) => v.is_completed).length, 0) || 0;
+  const progressPercent = totalVideos > 0 ? Math.round((completedVideos / totalVideos) * 100) : 0;
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -184,6 +199,18 @@ export default function VideoPlayerPage() {
                    Next
                    <ChevronRight className="h-4 w-4 ml-1" />
                  </Button>
+                 
+                 {/* Claim Certificate Button showing on last video */}
+                 {!data.next_video_id && user?.role !== 'ADMIN' && (
+                    <Button 
+                      size="sm" 
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold"
+                      onClick={handleVideoEnd}
+                    >
+                      <Award className="h-4 w-4 mr-2" />
+                      Claim Certificate
+                    </Button>
+                 )}
                </div>
             </div>
 
@@ -205,15 +232,39 @@ export default function VideoPlayerPage() {
                      <p className="text-white font-medium text-sm">{tree.title}</p>
                      
                      <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                       <div className="bg-primary h-full transition-all duration-500" style={{ width: '45%' }}></div>
+                       <div className="bg-primary h-full transition-all duration-500" style={{ width: `${progressPercent}%` }}></div>
                      </div>
                      <p className="text-[10px] text-slate-400 flex justify-between">
                         <span>Progress</span>
-                        <span>45% Complete</span>
+                        <span>{progressPercent}% Complete</span>
                      </p>
                   </div>
                   
-                  <div className="flex flex-col gap-2">
+                  {/* Certificate Status Tracker */}
+                  {user?.role !== 'ADMIN' && (
+                  <div className={`p-4 rounded-xl border flex items-center justify-between gap-3 ${progressPercent === 100 ? 'bg-yellow-500/10 border-yellow-500/30' : 'bg-slate-900 border-white/5 opacity-80'}`}>
+                    <div className="flex items-center gap-3">
+                       <div className={`shrink-0 h-10 w-10 rounded-full flex items-center justify-center ${progressPercent === 100 ? 'bg-yellow-500 text-white shadow-[0_0_15px_rgba(234,179,8,0.5)]' : 'bg-slate-800 text-slate-500'}`}>
+                          {progressPercent === 100 ? <Award className="h-5 w-5" /> : <Lock className="h-4 w-4" />}
+                       </div>
+                       <div>
+                         <h4 className={`text-sm font-bold ${progressPercent === 100 ? 'text-yellow-500' : 'text-slate-400'}`}>
+                           Course Certificate
+                         </h4>
+                         <p className="text-[10px] text-slate-500">
+                           {progressPercent === 100 ? 'Fully unlocked!' : `Complete ${totalVideos - completedVideos} more lessons`}
+                         </p>
+                       </div>
+                    </div>
+                    {progressPercent === 100 && (
+                      <Button size="sm" className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 h-8 text-xs font-bold" onClick={handleVideoEnd}>
+                        View
+                      </Button>
+                    )}
+                  </div>
+                  )}
+                  
+                  <div className="flex flex-col gap-2 pt-2">
                     <Button variant="ghost" size="sm" className="justify-start gap-3 text-slate-400 h-10 hover:text-white hover:bg-white/5">
                       <RotateCcw className="h-4 w-4" /> Reset Progress
                     </Button>

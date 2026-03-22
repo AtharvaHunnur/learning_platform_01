@@ -16,10 +16,12 @@ export class ProgressController {
   async updateVideoProgress(req: AuthRequest, res: Response) {
     try {
       const { last_position_seconds, is_completed } = req.body;
+      const clean_seconds = isNaN(Number(last_position_seconds)) ? 0 : Math.floor(Number(last_position_seconds));
+      
       const result = await progressService.updateVideoProgress(
         req.user!.userId,
         req.params.id,
-        { last_position_seconds, is_completed }
+        { last_position_seconds: clean_seconds, is_completed: Boolean(is_completed) }
       );
       return sendSuccess(res, result, 'Progress updated');
     } catch (error: any) {

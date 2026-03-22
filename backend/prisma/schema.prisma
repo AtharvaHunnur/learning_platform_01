@@ -7,24 +7,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  STUDENT
-  ADMIN
-}
-
 model User {
-  id            String          @id @default(uuid())
-  name          String
-  email         String          @unique
-  password_hash String
-  role          Role            @default(STUDENT)
-  created_at    DateTime        @default(now())
-  updated_at    DateTime        @updatedAt
-
-  refresh_tokens RefreshToken[]
+  id             String          @id @default(uuid())
+  name           String
+  email          String          @unique
+  password_hash  String
+  role           Role            @default(STUDENT)
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
+  certificates   Certificate[]
   enrollments    Enrollment[]
-  video_progress VideoProgress[]
   payments       Payment[]
+  refresh_tokens RefreshToken[]
+  video_progress VideoProgress[]
 
   @@map("users")
 }
@@ -36,8 +31,7 @@ model RefreshToken {
   expires_at DateTime
   revoked_at DateTime?
   created_at DateTime  @default(now())
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
   @@index([token_hash])
@@ -45,19 +39,19 @@ model RefreshToken {
 }
 
 model Subject {
-  id            String   @id @default(uuid())
+  id            String        @id @default(uuid())
   title         String
-  slug          String   @unique
-  description   String?  @db.Text
+  slug          String        @unique
+  description   String?       @db.Text
   thumbnail_url String?
-  price         Decimal? @db.Decimal(10, 2)
-  is_published  Boolean  @default(false)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-
-  sections    Section[]
-  enrollments Enrollment[]
-  payments    Payment[]
+  price         Decimal?      @db.Decimal(10, 2)
+  is_published  Boolean       @default(false)
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+  certificates  Certificate[]
+  enrollments   Enrollment[]
+  payments      Payment[]
+  sections      Section[]
 
   @@map("subjects")
 }
@@ -69,9 +63,8 @@ model Section {
   order_index Int
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
-
-  subject Subject @relation(fields: [subject_id], references: [id], onDelete: Cascade)
-  videos  Video[]
+  subject     Subject  @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+  videos      Video[]
 
   @@unique([subject_id, order_index])
   @@index([subject_id])
@@ -79,20 +72,19 @@ model Section {
 }
 
 model Video {
-  id               String   @id @default(uuid())
+  id               String          @id @default(uuid())
   title            String
-  description      String?  @db.Text
+  description      String?         @db.Text
   youtube_url      String
   section_id       String
   order_index      Int
-  duration_seconds Int      @default(0)
-  is_published     Boolean  @default(false)
+  duration_seconds Int             @default(0)
+  is_published     Boolean         @default(false)
   thumbnail_url    String?
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
-
-  section  Section         @relation(fields: [section_id], references: [id], onDelete: Cascade)
-  progress VideoProgress[]
+  created_at       DateTime        @default(now())
+  updated_at       DateTime        @updatedAt
+  progress         VideoProgress[]
+  section          Section         @relation(fields: [section_id], references: [id], onDelete: Cascade)
 
   @@unique([section_id, order_index])
   @@index([section_id])
@@ -104,9 +96,8 @@ model Enrollment {
   user_id    String
   subject_id String
   created_at DateTime @default(now())
-
-  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  subject Subject @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+  subject    Subject  @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, subject_id])
   @@index([user_id])
@@ -123,9 +114,8 @@ model VideoProgress {
   completed_at          DateTime?
   created_at            DateTime  @default(now())
   updated_at            DateTime  @updatedAt
-
-  user  User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  video Video @relation(fields: [video_id], references: [id], onDelete: Cascade)
+  user                  User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  video                 Video     @relation(fields: [video_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, video_id])
   @@index([user_id])
@@ -133,30 +123,48 @@ model VideoProgress {
   @@map("video_progress")
 }
 
+model Payment {
+  id             String        @id @default(uuid())
+  user_id        String
+  subject_id     String
+  amount         Decimal       @db.Decimal(10, 2)
+  currency       String        @default("INR")
+  status         PaymentStatus @default(PENDING)
+  payment_method String?
+  transaction_id String?       @unique
+  failure_reason String?
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+  subject        Subject       @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+  user           User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([subject_id])
+  @@map("payments")
+}
+
+model Certificate {
+  id         String   @id @default(uuid())
+  user_id    String
+  subject_id String
+  issued_at  DateTime @default(now())
+  subject    Subject  @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, subject_id])
+  @@index([user_id])
+  @@index([subject_id])
+  @@map("certificates")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
 enum PaymentStatus {
   PENDING
   COMPLETED
   FAILED
   REFUNDED
-}
-
-model Payment {
-  id                String        @id @default(uuid())
-  user_id           String
-  subject_id        String
-  amount            Decimal       @db.Decimal(10, 2)
-  currency          String        @default("INR")
-  status            PaymentStatus @default(PENDING)
-  payment_method    String?
-  transaction_id    String?       @unique
-  failure_reason    String?
-  created_at        DateTime      @default(now())
-  updated_at        DateTime      @updatedAt
-
-  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  subject Subject @relation(fields: [subject_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([subject_id])
-  @@map("payments")
 }

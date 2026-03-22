@@ -3,19 +3,29 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
+import api from "@/lib/api";
 import { Navbar } from "@/components/layout/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Users, LayoutDashboard, User as UserIcon, History } from "lucide-react";
+import { BookOpen, Users, LayoutDashboard, User as UserIcon, History, IndianRupee } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
+  const [stats, setStats] = useState({ users: 0, courses: 0, revenue: 0 });
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (user?.role === "ADMIN") {
+      api.get("/admin/stats")
+        .then((res) => setStats(res.data.data))
+        .catch((err) => console.error("Failed to load admin stats", err));
+    }
+  }, [user]);
 
   if (!isMounted || !user) return null;
 
@@ -31,7 +41,43 @@ export default function DashboardPage() {
         </div>
 
         {user.role === "ADMIN" ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-8">
+            <h2 className="text-2xl font-bold">Platform Overview</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="glass-card bg-primary/5 border-primary/20 shadow-lg">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Total Users</CardTitle>
+                  <Users className="h-4 w-4 text-primary" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{stats.users}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Registered accounts</p>
+                </CardContent>
+              </Card>
+              <Card className="glass-card bg-primary/5 border-primary/20 shadow-lg">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Total Courses</CardTitle>
+                  <BookOpen className="h-4 w-4 text-primary" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{stats.courses}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Published and draft</p>
+                </CardContent>
+              </Card>
+              <Card className="glass-card bg-primary/5 border-primary/20 shadow-lg">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Total Revenue</CardTitle>
+                  <IndianRupee className="h-4 w-4 text-primary" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">₹{stats.revenue}</div>
+                  <p className="text-xs text-muted-foreground mt-1">All time</p>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <h2 className="text-2xl font-bold mt-8 mb-4">Quick Actions</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="glass-card hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-primary/10 hover:border-primary/30">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-lg font-medium">Manage Courses</CardTitle>
@@ -69,6 +115,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </div>
+        </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="glass-card hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-primary/10 hover:border-primary/30">

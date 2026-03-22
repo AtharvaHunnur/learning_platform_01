@@ -58,7 +58,7 @@ export function SubjectCard({ id, title, description, thumbnail_url, _count, pri
       </CardContent>
       <CardFooter className="p-4 pt-2">
         <Link href={`/subjects/${id}`} className="w-full">
-          <Button variant="outline" className="w-full">View Details</Button>
+          <Button className="w-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-none hover:shadow-md">View Details</Button>
         </Link>
       </CardFooter>
     </Card>

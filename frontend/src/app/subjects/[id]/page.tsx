@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import api from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
-import { BookOpen, CheckCircle, Lock, Play, Clock, ArrowRight, Users, GraduationCap, AlertCircle } from "lucide-react";
+import { BookOpen, CheckCircle, Lock, Play, Clock, ArrowRight, Users, GraduationCap, AlertCircle, Award } from "lucide-react";
 import { PaymentGateway } from "@/components/subjects/PaymentGateway";
 
 export default function SubjectDetailPage() {
@@ -20,6 +20,7 @@ export default function SubjectDetailPage() {
   const [loading, setLoading] = useState(true);
   const [enrollLoading, setEnrollLoading] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [certificateId, setCertificateId] = useState<string | null>(null);
 
   const fetchData = async () => {
     try {
@@ -29,6 +30,9 @@ export default function SubjectDetailPage() {
       if (isAuthenticated) {
         const enrollRes = await api.get(`/subjects/${id}/enrollment`);
         setEnrolled(enrollRes.data.data.enrolled);
+        if (enrollRes.data.data.certificate_id) {
+          setCertificateId(enrollRes.data.data.certificate_id);
+        }
       }
     } catch (err) {
       console.error("Failed to fetch subject", err);
@@ -38,8 +42,12 @@ export default function SubjectDetailPage() {
   };
 
   useEffect(() => {
+    if (user?.role === "ADMIN") {
+      router.push("/dashboard");
+      return;
+    }
     fetchData();
-  }, [id, isAuthenticated]);
+  }, [id, isAuthenticated, user, router]);
 
   const handleEnroll = async () => {
     if (!isAuthenticated) {
@@ -123,10 +131,22 @@ export default function SubjectDetailPage() {
               
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 {enrolled ? (
-                  <Button size="lg" className="gap-2 h-14 text-lg px-8" onClick={handleStartLearning}>
-                    Continue Learning
-                    <ArrowRight className="h-5 w-5" />
-                  </Button>
+                  <>
+                    <Button size="lg" className="gap-2 h-14 text-lg px-8" onClick={handleStartLearning}>
+                      Continue Learning
+                      <ArrowRight className="h-5 w-5" />
+                    </Button>
+                    {certificateId && user?.role !== 'ADMIN' && (
+                      <Button 
+                        size="lg" 
+                        className="gap-2 h-14 text-lg px-8 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold" 
+                        onClick={() => window.open(`/certificate/${certificateId}`, '_blank')}
+                      >
+                        <Award className="h-5 w-5" />
+                        View Certificate
+                      </Button>
+                    )}
+                  </>
                 ) : (
                   <Button size="lg" className="gap-2 h-14 text-lg px-8" onClick={handleEnroll} disabled={enrollLoading}>
                     {enrollLoading ? "Processing..." : (subject.price && parseFloat(subject.price) > 0 ? `Enroll for ₹${subject.price}` : "Enroll for Free")}

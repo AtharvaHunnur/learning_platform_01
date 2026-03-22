@@ -12,6 +12,7 @@ import videosRoutes from './modules/videos/videos.routes';
 import progressRoutes from './modules/progress/progress.routes';
 import paymentRoutes from './modules/payment/payment.routes';
 import adminRoutes from './modules/admin/admin.routes';
+import certificatesRoutes from './modules/certificates/certificates.routes';
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/videos', videosRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/certificates', certificatesRoutes);
 
 // Error handling
 app.use(notFoundHandler);

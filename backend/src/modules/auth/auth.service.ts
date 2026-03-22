@@ -110,6 +110,9 @@ export class AuthService {
             },
           },
         },
+        certificates: {
+          select: { subject_id: true }
+        },
       },
     });
 
