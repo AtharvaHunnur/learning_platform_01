@@ -6,6 +6,7 @@ import { aiApi, ChatMessage, ChatSession, AssistantType, MessageRole } from '@/l
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 
 export const ChatWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,6 +15,12 @@ export const ChatWidget: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [session, setSession] = useState<ChatSession | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+
+  // Hide widget on auth pages to block non-logged-in users
+  if (pathname?.startsWith('/auth')) {
+    return null;
+  }
 
   useEffect(() => {
     if (isOpen && !session) {
