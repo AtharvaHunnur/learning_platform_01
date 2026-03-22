@@ -257,7 +257,7 @@ export default function SubjectDetailPage() {
           <div className="space-y-4">
             <div className="flex items-center gap-2 justify-center md:justify-start">
               <GraduationCap className="h-6 w-6 text-primary" />
-              <span className="font-bold text-lg">Antigravity LMS</span>
+              <span className="font-bold text-lg">Learn n Earn</span>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs">
               Empowering learners worldwide through high-quality, accessible education.
@@ -265,7 +265,7 @@ export default function SubjectDetailPage() {
           </div>
           <div></div>
           <div className="text-sm text-muted-foreground flex flex-col items-center md:items-end md:justify-center">
-            <p>© 2024 Antigravity LMS. Built for Excellence.</p>
+            <p>© 2024 Learn n Earn. Built for Excellence.</p>
           </div>
         </div>
       </footer>

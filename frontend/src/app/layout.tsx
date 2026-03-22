@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LMS - Learning Management System",
+  title: "Learn n Earn",
   description: "A full-stack LMS built with Next.js and Express",
 };
 

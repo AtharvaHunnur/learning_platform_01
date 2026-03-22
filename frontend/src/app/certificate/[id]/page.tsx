@@ -132,7 +132,7 @@ export default function CertificatePage() {
             <div className="w-full flex justify-between items-end mt-24 px-12">
               <div className="flex flex-col items-center border-t-2 border-slate-300 pt-3 w-48 shrink-0">
                 <span className="text-xl font-[signature] text-slate-800 -mt-16 mb-6 inline-block transform -rotate-2">
-                  Antigravity LMS
+                  Learn n Earn
                 </span>
                 <span className="font-bold text-slate-700 uppercase tracking-wider text-sm">Instructor</span>
               </div>
