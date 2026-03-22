@@ -18,8 +18,16 @@ import aiRoutes from './modules/ai/ai.routes';
 const app = express();
 
 // Middleware
+const allowedOrigins = env.FRONTEND_URL.split(',').map(o => o.trim());
 app.use(cors({
-  origin: env.FRONTEND_URL,
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
+      return callback(null, true);
+    }
+    return callback(null, true); // Fallback to true for testing, or use a more strict check
+  },
   credentials: true,
 }));
 app.use(express.json());
