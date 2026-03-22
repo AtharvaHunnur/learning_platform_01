@@ -1,4 +1,4 @@
-# Antigravity LMS
+# SkillForge LMS
 
 A production-ready Learning Management System similar to Udemy, built with modern full-stack technologies.
 

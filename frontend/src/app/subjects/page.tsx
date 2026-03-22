@@ -45,7 +45,7 @@ export default function SubjectsPage() {
         <section className="bg-primary/5 py-12 px-4 border-b">
           <div className="container max-w-7xl mx-auto flex flex-col items-center text-center space-y-4">
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-              Master New Skills with Antigravity
+              Master New Skills with SkillForge
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl">
               Clean, minimalist, and powerful learning experience designed for modern students.

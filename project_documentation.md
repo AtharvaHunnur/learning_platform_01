@@ -1,7 +1,7 @@
-# Antigravity LMS - Project Documentation
+# SkillForge LMS - Project Documentation
 
 ## 📝 Overview
-Antigravity LMS is a full-stack Learning Management System designed for high performance and seamless user experience. It follows a modern architecture with a decoupled frontend and backend, ensuring scalability and ease of maintenance. The platform allows admins to manage courses (subjects), sections, and videos, while students can enroll, track their progress, and make payments.
+SkillForge LMS is a full-stack Learning Management System designed for high performance and seamless user experience. It follows a modern architecture with a decoupled frontend and backend, ensuring scalability and ease of maintenance. The platform allows admins to manage courses (subjects), sections, and videos, while students can enroll, track their progress, and make payments.
 
 **Repository**: [AtharvaHunnur/learning_platform_01](https://github.com/AtharvaHunnur/learning_platform_01)
 
