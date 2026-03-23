@@ -94,7 +94,7 @@ export default function SubjectsPage() {
       
       <footer className="border-t py-8 px-4 bg-muted/10">
         <div className="container max-w-7xl mx-auto text-center text-sm text-muted-foreground">
-          © 2024 Learn n Earn. All rights reserved.
+          © 2024 SkillForge. All rights reserved.
         </div>
       </footer>
     </div>

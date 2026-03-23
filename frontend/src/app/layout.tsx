@@ -9,7 +9,7 @@ import { ChatWidget } from "@/components/ai/ChatWidget";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Learn n Earn",
+  title: "SkillForge",
   description: "A full-stack LMS built with Next.js and Express",
 };
 

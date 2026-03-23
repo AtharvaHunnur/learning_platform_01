@@ -85,7 +85,7 @@ export const ChatWidget: React.FC = () => {
           <div className="flex items-center justify-between bg-primary p-4 text-primary-foreground">
             <div className="flex items-center gap-2">
               <Bot className="h-5 w-5" />
-              <span className="font-semibold text-lg">Learn n Earn Assistant</span>
+              <span className="font-semibold text-lg">SkillForge Assistant</span>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="hover:bg-primary-foreground/10 text-primary-foreground">
               <X className="h-5 w-5" />

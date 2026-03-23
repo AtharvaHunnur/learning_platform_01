@@ -43,7 +43,7 @@ export default function LoginPage() {
       </div>
       <div className="mb-8 flex items-center gap-2">
         <GraduationCap className="h-8 w-8 text-primary" />
-        <span className="text-2xl font-bold">Learn n Earn</span>
+        <span className="text-2xl font-bold">SkillForge</span>
       </div>
       
       <Card className="w-full max-w-md glass-card shadow-2xl border-primary/20">

@@ -93,7 +93,7 @@ export const AdminAssistant: React.FC = () => {
                 <div>
                   <h3 className="text-xl font-semibold">Welcome, Administrator</h3>
                   <p className="text-muted-foreground max-w-md mt-2">
-                    I'm here to help you manage "Learn n Earn". Try one of the suggestions below to get started.
+                    I'm here to help you manage "SkillForge". Try one of the suggestions below to get started.
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2 w-full max-w-md mt-4">
