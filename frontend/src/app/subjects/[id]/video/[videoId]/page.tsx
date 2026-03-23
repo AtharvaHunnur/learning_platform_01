@@ -140,9 +140,9 @@ export default function VideoPlayerPage() {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <Navbar />
-      <div className="flex flex-col lg:flex-row flex-grow overflow-hidden">
+      <div className="flex flex-col lg:flex-row flex-grow overflow-y-auto lg:overflow-hidden relative">
         {/* Main Content */}
-        <div className="flex-grow flex flex-col overflow-y-auto bg-slate-950">
+        <div className="flex-grow flex flex-col lg:overflow-y-auto bg-slate-950 shrink-0">
           <div className="w-full max-w-5xl mx-auto px-4 py-8 flex flex-col gap-6">
             {data.locked ? (
               <div className="aspect-video bg-slate-900 flex flex-col items-center justify-center text-white rounded-xl border border-white/5 space-y-4">
