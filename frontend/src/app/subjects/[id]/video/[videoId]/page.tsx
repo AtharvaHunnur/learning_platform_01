@@ -116,6 +116,43 @@ export default function VideoPlayerPage() {
     }
   };
 
+  const handleResetProgress = async () => {
+    if (!window.confirm("Are you sure you want to reset your progress for this lesson?")) return;
+    try {
+      setSyncing(true);
+      await api.post(`/progress/videos/${videoId}`, {
+        last_position_seconds: 0,
+        is_completed: false
+      });
+      const treeRes = await api.get(`/subjects/${subjectId}/tree`);
+      setTree(treeRes.data.data);
+      if (player) {
+        player.seekTo(0);
+        player.pauseVideo();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const handleMarkCompleted = async () => {
+    try {
+      setSyncing(true);
+      await api.post(`/progress/videos/${videoId}`, {
+        last_position_seconds: player ? player.getCurrentTime() : 0,
+        is_completed: true
+      });
+      const treeRes = await api.get(`/subjects/${subjectId}/tree`);
+      setTree(treeRes.data.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const extractVideoId = (url: string) => {
     const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const match = url.match(regex);
@@ -136,6 +173,7 @@ export default function VideoPlayerPage() {
   const totalVideos = tree?.sections?.reduce((acc: number, s: any) => acc + s.videos?.length, 0) || 0;
   const completedVideos = tree?.sections?.reduce((acc: number, s: any) => acc + s.videos?.filter((v: any) => v.is_completed).length, 0) || 0;
   const progressPercent = totalVideos > 0 ? Math.round((completedVideos / totalVideos) * 100) : 0;
+  const isCurrentVideoCompleted = tree?.sections?.some((s: any) => s.videos?.some((v: any) => v.id === videoId && v.is_completed));
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -266,9 +304,15 @@ export default function VideoPlayerPage() {
                   )}
                   
                   <div className="flex flex-col gap-2 pt-2">
-                    <Button variant="ghost" size="sm" className="justify-start gap-3 text-slate-400 h-10 hover:text-white hover:bg-white/5">
-                      <RotateCcw className="h-4 w-4" /> Reset Progress
-                    </Button>
+                    {isCurrentVideoCompleted ? (
+                      <Button variant="ghost" size="sm" onClick={handleResetProgress} disabled={syncing} className="justify-start gap-3 text-slate-400 h-10 hover:text-white hover:bg-white/5">
+                        <RotateCcw className="h-4 w-4" /> Reset Progress
+                      </Button>
+                    ) : (
+                      <Button variant="ghost" size="sm" onClick={handleMarkCompleted} disabled={syncing} className="justify-start gap-3 text-slate-400 h-10 hover:text-white hover:bg-white/5">
+                        <CheckCircle className="h-4 w-4 text-green-500" /> Mark as Completed
+                      </Button>
+                    )}
                     <Button variant="ghost" size="sm" className="justify-start gap-3 text-slate-400 h-10 hover:text-white hover:bg-white/5">
                       <Monitor className="h-4 w-4" /> Large Player
                     </Button>

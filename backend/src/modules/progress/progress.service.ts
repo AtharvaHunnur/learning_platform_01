@@ -78,9 +78,9 @@ export class ProgressService {
     if (data.last_position_seconds !== undefined) {
       updateData.last_position_seconds = data.last_position_seconds;
     }
-    if (data.is_completed) {
-      updateData.is_completed = true;
-      updateData.completed_at = new Date();
+    if (data.is_completed !== undefined) {
+      updateData.is_completed = data.is_completed;
+      updateData.completed_at = data.is_completed ? new Date() : null;
     }
 
     return prisma.videoProgress.upsert({
