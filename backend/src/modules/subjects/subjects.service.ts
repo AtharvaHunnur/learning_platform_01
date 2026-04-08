@@ -1,6 +1,6 @@
 import prisma from '../../config/db';
 import slugify from 'slugify';
-import { getYouTubeThumbnail } from '../../utils/youtube';
+import { getYouTubeThumbnail, getYouTubePlaylistId, getPlaylistVideos, parseDurationToSeconds, getYouTubeId, getSingleVideoDetails } from '../../utils/youtube';
 
 export class SubjectsService {
   async list(page: number = 1, limit: number = 12, search?: string) {
@@ -181,9 +181,66 @@ export class SubjectsService {
       thumbnail_url = getYouTubeThumbnail(preview_youtube_url) || undefined;
     }
 
-    return prisma.subject.create({
+    const subject = await prisma.subject.create({
       data: { ...rest, thumbnail_url, slug },
     });
+
+    if (preview_youtube_url) {
+      const playlistId = getYouTubePlaylistId(preview_youtube_url);
+      if (playlistId) {
+        // Handle Playlist
+        const videos = await getPlaylistVideos(playlistId);
+        if (videos.length > 0) {
+          const section = await prisma.section.create({
+            data: { title: "Course Content", subject_id: subject.id, order_index: 0 }
+          });
+          
+          await prisma.video.createMany({
+            data: videos.map((v, i) => ({
+              title: v.title,
+              youtube_url: `https://youtube.com/watch?v=${v.id}`,
+              section_id: section.id,
+              order_index: i,
+              duration_seconds: parseDurationToSeconds(v.durationText),
+              is_published: true,
+              thumbnail_url: v.thumbnail
+            }))
+          });
+          
+          if (!thumbnail_url && videos[0]?.thumbnail) {
+             await prisma.subject.update({
+               where: { id: subject.id },
+               data: { thumbnail_url: videos[0].thumbnail }
+             });
+          }
+        }
+      } else {
+        // Handle Single Video
+        const videoId = getYouTubeId(preview_youtube_url);
+        if (videoId) {
+           const singleVideo = await getSingleVideoDetails(videoId);
+           if (singleVideo) {
+             const section = await prisma.section.create({
+               data: { title: "Course Content", subject_id: subject.id, order_index: 0 }
+             });
+
+             await prisma.video.create({
+               data: {
+                 title: singleVideo.title,
+                 youtube_url: `https://youtube.com/watch?v=${singleVideo.id}`,
+                 section_id: section.id,
+                 order_index: 0,
+                 duration_seconds: parseDurationToSeconds(singleVideo.durationText),
+                 is_published: true,
+                 thumbnail_url: singleVideo.thumbnail
+               }
+             });
+           }
+        }
+      }
+    }
+
+    return subject;
   }
 
   async update(id: string, data: { title?: string; description?: string; thumbnail_url?: string; is_published?: boolean; price?: number; preview_youtube_url?: string }) {
