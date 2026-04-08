@@ -49,15 +49,19 @@ export default function VideoPlayerPage() {
     fetchData();
   }, [videoId]);
 
-  const updateProgress = async (seconds: number, completed: boolean = false) => {
+  const updateProgress = async (seconds: number, completed?: boolean) => {
     if (syncing) return;
     
     try {
       setSyncing(true);
-      await api.post(`/progress/videos/${videoId}`, {
-        last_position_seconds: isNaN(seconds) || seconds === null ? 0 : Math.floor(seconds),
-        is_completed: completed
-      });
+      const payload: any = {
+        last_position_seconds: isNaN(seconds) || seconds === null ? 0 : Math.floor(seconds)
+      };
+      if (completed !== undefined) {
+        payload.is_completed = completed;
+      }
+      
+      await api.post(`/progress/videos/${videoId}`, payload);
       
       if (completed) {
         // Refresh tree to update sidebar completion marks and locks
