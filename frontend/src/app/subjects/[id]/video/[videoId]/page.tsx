@@ -197,7 +197,7 @@ export default function VideoPlayerPage() {
     : Math.max(data?.progress?.last_position_seconds || 0, currentPlayerTime);
 
   const totalWatched = baseWatched + currentVideoWatched;
-  const progressPercent = totalDuration > 0 ? Math.min(100, Math.floor((totalWatched / totalDuration) * 100)) : 0;
+  const progressPercent = totalDuration > 0 ? Math.min(100, Number(((totalWatched / totalDuration) * 100).toFixed(2))) : 0;
   
   const totalVideos = tree?.sections?.reduce((acc: number, s: any) => acc + s.videos?.length, 0) || 0;
   const completedVideos = tree?.sections?.reduce((acc: number, s: any) => acc + s.videos?.filter((v: any) => v.is_completed).length, 0) || 0;
