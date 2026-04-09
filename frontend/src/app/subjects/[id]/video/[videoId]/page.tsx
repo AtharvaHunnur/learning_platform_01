@@ -197,10 +197,18 @@ export default function VideoPlayerPage() {
     : Math.max(data?.progress?.last_position_seconds || 0, currentPlayerTime);
 
   const totalWatched = baseWatched + currentVideoWatched;
-  const progressPercent = totalDuration > 0 ? Math.min(100, Number(((totalWatched / totalDuration) * 100).toFixed(2))) : 0;
   
   const totalVideos = tree?.sections?.reduce((acc: number, s: any) => acc + s.videos?.length, 0) || 0;
-  const completedVideos = tree?.sections?.reduce((acc: number, s: any) => acc + s.videos?.filter((v: any) => v.is_completed).length, 0) || 0;
+  const completedVideosCount = tree?.sections?.reduce((acc: number, s: any) => acc + s.videos?.filter((v: any) => v.is_completed).length, 0) || 0;
+  const isCourseFullyCompleted = totalVideos > 0 && completedVideosCount === totalVideos;
+
+  let progressPercent = 0;
+  if (totalDuration > 0) {
+    progressPercent = Math.min(100, Number(((totalWatched / totalDuration) * 100).toFixed(2)));
+  } else if (totalVideos > 0) {
+    // Realtime progress for duration-less courses can't be computed on seconds, fallback to linear completion chunks
+    progressPercent = Math.min(100, Number(((completedVideosCount / totalVideos) * 100).toFixed(2)));
+  }
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -266,8 +274,8 @@ export default function VideoPlayerPage() {
                    <ChevronRight className="h-4 w-4 ml-1" />
                  </Button>
                  
-                 {/* Claim Certificate Button showing on last video */}
-                 {!data.next_video_id && user?.role !== 'ADMIN' && (
+                 {/* Claim Certificate Button showing ONLY when successfully completed */}
+                 {isCourseFullyCompleted && user?.role !== 'ADMIN' && (
                     <Button 
                       size="sm" 
                       className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold"
@@ -318,7 +326,7 @@ export default function VideoPlayerPage() {
                            Course Certificate
                          </h4>
                          <p className="text-[10px] text-slate-500">
-                           {progressPercent === 100 ? 'Fully unlocked!' : `Complete ${totalVideos - completedVideos} more lessons`}
+                           {isCourseFullyCompleted ? 'Fully unlocked!' : `Complete the course to unlock`}
                          </p>
                        </div>
                     </div>
