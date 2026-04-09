@@ -21,7 +21,10 @@ export default function VideoPlayerPage() {
   const [loading, setLoading] = useState(true);
   const [player, setPlayer] = useState<any>(null);
   const [syncing, setSyncing] = useState(false);
+  const [currentPlayerTime, setCurrentPlayerTime] = useState(0);
   const lastUpdateRef = useRef<number>(0);
+  
+  const isCurrentVideoCompleted = tree?.sections?.some((s: any) => s.videos?.some((v: any) => v.id === videoId && v.is_completed));
 
   const fetchData = async () => {
     try {
@@ -75,20 +78,24 @@ export default function VideoPlayerPage() {
     }
   };
 
-  // Track progress every 10 seconds
+  // Track progress every second for real-time UI, and sync every 10 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       if (player && player.getPlayerState() === 1) { // 1 is Playing
         const currentTime = player.getCurrentTime();
-        if (Math.abs(currentTime - lastUpdateRef.current) > 10) {
-          updateProgress(currentTime);
+        setCurrentPlayerTime(currentTime);
+
+        if (Math.abs(currentTime - lastUpdateRef.current) >= 10) {
+          const isCompleted = data?.duration_seconds > 0 && currentTime >= data.duration_seconds * 0.9;
+          // Only send completed flag if it's newly completed
+          updateProgress(currentTime, (isCompleted && !isCurrentVideoCompleted) ? true : undefined);
           lastUpdateRef.current = currentTime;
         }
       }
-    }, 10000);
+    }, 1000);
     
     return () => clearInterval(interval);
-  }, [player, videoId]);
+  }, [player, videoId, data, isCurrentVideoCompleted]);
 
   const onPlayerReady = (event: any) => {
     setPlayer(event.target);
@@ -174,10 +181,26 @@ export default function VideoPlayerPage() {
 
   if (!data || !tree) return <div className="p-8">Error loading content</div>;
 
+  const totalDuration = tree?.sections?.reduce((acc: number, s: any) => 
+    acc + (s.videos?.reduce((vacc: number, v: any) => vacc + (v.duration_seconds || 0), 0) || 0)
+  , 0) || 0;
+
+  const baseWatched = tree?.sections?.reduce((acc: number, s: any) => 
+    acc + (s.videos?.reduce((vacc: number, v: any) => {
+      if (v.id === videoId) return vacc; // Current video logic is handled below
+      return vacc + (v.is_completed ? (v.duration_seconds || 0) : (v.last_position_seconds || 0));
+    }, 0) || 0)
+  , 0) || 0;
+
+  const currentVideoWatched = isCurrentVideoCompleted 
+    ? (data.duration_seconds || 0) 
+    : Math.max(data?.progress?.last_position_seconds || 0, currentPlayerTime);
+
+  const totalWatched = baseWatched + currentVideoWatched;
+  const progressPercent = totalDuration > 0 ? Math.min(100, Math.floor((totalWatched / totalDuration) * 100)) : 0;
+  
   const totalVideos = tree?.sections?.reduce((acc: number, s: any) => acc + s.videos?.length, 0) || 0;
   const completedVideos = tree?.sections?.reduce((acc: number, s: any) => acc + s.videos?.filter((v: any) => v.is_completed).length, 0) || 0;
-  const progressPercent = totalVideos > 0 ? Math.round((completedVideos / totalVideos) * 100) : 0;
-  const isCurrentVideoCompleted = tree?.sections?.some((s: any) => s.videos?.some((v: any) => v.id === videoId && v.is_completed));
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -308,15 +331,6 @@ export default function VideoPlayerPage() {
                   )}
                   
                   <div className="flex flex-col gap-2 pt-2">
-                    {isCurrentVideoCompleted ? (
-                      <Button variant="ghost" size="sm" onClick={handleResetProgress} disabled={syncing} className="justify-start gap-3 text-slate-400 h-10 hover:text-white hover:bg-white/5">
-                        <RotateCcw className="h-4 w-4" /> Reset Progress
-                      </Button>
-                    ) : (
-                      <Button variant="ghost" size="sm" onClick={handleMarkCompleted} disabled={syncing} className="justify-start gap-3 text-slate-400 h-10 hover:text-white hover:bg-white/5">
-                        <CheckCircle className="h-4 w-4 text-green-500" /> Mark as Completed
-                      </Button>
-                    )}
                     <Button variant="ghost" size="sm" className="justify-start gap-3 text-slate-400 h-10 hover:text-white hover:bg-white/5">
                       <Monitor className="h-4 w-4" /> Large Player
                     </Button>
