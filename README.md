@@ -6,7 +6,7 @@ A production-ready Learning Management System similar to Udemy, built with moder
 
 ---
 
-## 🚀 Key Features
+## 🚀 Key Features related to this project and working
 
 - **Decoupled Architecture**: Next.js 15 Frontend and Node.js/Express Backend.
 - **Authentication**: Secure JWT authentication with Refresh Token rotation.
